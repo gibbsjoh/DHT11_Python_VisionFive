@@ -116,9 +116,7 @@ class DHT11:
         lengths = [] # will contain the lengths of data pull up periods
         current_length = 0 # will contain the length of the previous period
 
-        for i in range(len(data)):
-
-            current = data[i]
+        for current in data:
             current_length += 1
 
             if state == STATE_INIT_PULL_DOWN:
@@ -175,26 +173,16 @@ class DHT11:
 
         # use the halfway to determine whether the period it is long or short
         halfway = shortest_pull_up + (longest_pull_up - shortest_pull_up) / 2
-        bits = []
 
-        for i in range(0, len(pull_up_lengths)):
-            bit = False
-            if pull_up_lengths[i] > halfway:
-                bit = True
-            bits.append(bit)
-
-        return bits
+        return [pull_up > halfway for pull_up in pull_up_lengths]
 
     def __bits_to_bytes(self, bits):
         the_bytes = []
         byte = 0
 
-        for i in range(0, len(bits)):
+        for i, bit in enumerate(bits):
             byte = byte << 1
-            if (bits[i]):
-                byte = byte | 1
-            else:
-                byte = byte | 0
+            byte |= bit
             if ((i + 1) % 8 == 0):
                 the_bytes.append(byte)
                 byte = 0
